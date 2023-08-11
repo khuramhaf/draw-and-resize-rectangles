@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Graphic Editor</title>
+  <meta name="description" content="This is free online Graphic Editor. You can create basic shapes in this graphic editor and also move shapes.">
+</head>
+<body>
+  <div id ="container">
+
+
+
+
+  <h1>Resize Rectangles</h1>
+  <svg id="my-svg" width="700" height="450" style="background-color: blue; margin-top:0px; margin-left:0px"></svg>
+ 
+  <div>
+
+    <button onclick = "rectfun()">Rect</button>
+    <button onclick = "resizefun()">Resize</button>
+
+  </div>
+ 
+  </div>
+  <script>
+
+    let svg = document.getElementById('my-svg');
+    let startX, startY;
+    
+    let rectangle;
+    let rectangle2;
+    let recttool=0
+    let setid = 0;
+    let getid;
+    var resizetool = 0;
+
+    var resizeh =false;
+    var resizev = false
+    var maindata = [];
+    var maindataselect;
+
+    var finalwidth;
+    var finalheight;
+
+
+
+    function rectfun(){
+
+      recttool = 1;
+      resizetool = 0
+    }
+
+    function resizefun(){
+recttool = 0;
+resizetool = 1;
+}
+
+
+
+
+    function handleMouseDown(event) {
+
+
+   
+
+
+if(recttool ===1){
+rectangle2 = true;
+
+
+      
+      startX = event.clientX
+      startY = event.clientY
+
+
+      rectangle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rectangle.setAttribute('stroke', 'black');
+      rectangle.setAttribute('fill', 'transparent');
+      rectangle.id = setid;
+      setid++;
+      svg.appendChild(rectangle);
+
+
+      rectangle.addEventListener("click", (event)=>{
+
+        getid = event.target.id;
+
+      })
+  
+ 
+  
+  
+} 
+
+if(resizetool===1){
+
+  startX = event.clientX
+      startY = event.clientY
+  for (i = 0; i <maindata.length; i++){
+
+var getx = parseInt(maindata[i].getAttribute('x'))
+var gety = parseInt(maindata[i].getAttribute('y'))
+var getwidth = parseInt(maindata[i].getAttribute('width'))
+var getheight = parseInt(maindata[i].getAttribute("height"))
+
+var rect = svg.getBoundingClientRect()
+if (event.clientX-rect.left >= getx-10 && event.clientX-rect.left <= getx+10   ||  event.clientX-rect.left>=getx+getwidth -10 && event.clientX-rect.left<=getx+getwidth +10 ){
+
+resizeh = true;
+
+getid = maindata[i].id;
+maindataselect=i
+
+finalwidth = parseInt(maindata[i].getAttribute('width'))
+
+}
+
+if (event.clientY-rect.top >= gety-10 && event.clientY-rect.top <= gety+10 ||  event.clientY-rect.top>=gety+getheight -10 && event.clientY-rect.top<=gety+getheight +10 ){
+
+
+  resizev = true;
+
+getid = maindata[i].id;
+maindataselect = i
+finalheight = parseInt(maindata[i].getAttribute('height'))
+}
+
+}
+}
+
+  
+  }
+
+    function handleMouseMove(event) {
+      if (rectangle2 ===true) {
+        var rect = svg.getBoundingClientRect();
+        
+        const width = Math.abs(event.clientX - startX);
+        const height = Math.abs(event.clientY - startY);
+
+        rectangle.setAttribute('x', Math.min(startX-rect.left, event.clientX-rect.left));
+        rectangle.setAttribute('y', Math.min(startY-rect.top, event.clientY-rect.top));
+        rectangle.setAttribute('width', width);
+        rectangle.setAttribute('height', height);
+      }
+
+if(resizetool===1){
+      for (i = 0; i <maindata.length; i++){
+
+var getx = parseInt(maindata[i].getAttribute('x'))
+var gety = parseInt(maindata[i].getAttribute('y'))
+var getwidth = parseInt(maindata[i].getAttribute('width'))
+var getheight = parseInt(maindata[i].getAttribute("height"))
+
+var rect = svg.getBoundingClientRect()
+if (event.clientX-rect.left >= getx-10 && event.clientX-rect.left <= getx+10 ||  event.clientX-rect.left>=getx+getwidth -10 && event.clientX-rect.left<=getx+getwidth +10 ){
+
+
+  svg.style.cursor = 'ew-resize';
+  finalwidth 
+}
+
+
+else if (event.clientY-rect.top >= gety-10 && event.clientY-rect.top <= gety+10 ||  event.clientY-rect.top>=gety+getheight -10 && event.clientY-rect.top<=gety+getheight +10 ){
+
+
+svg.style.cursor = 'ns-resize';
+}
+
+else{
+  svg.style.cursor = 'auto'
+}
+}
+    }
+  
+  if(resizeh ===true){
+
+ var finaldata = finalwidth + (event.clientX-startX)
+document.getElementById(getid).setAttribute('width', Math.abs(finaldata))
+maindata[maindataselect].setAttribute('width', Math.abs(finaldata))
+
+
+
+
+  }
+
+  if(resizev ===true){
+
+var finaldata = finalheight + (event.clientY - startY)
+document.getElementById(getid).setAttribute('height', Math.abs(finaldata))
+maindata[maindataselect].setAttribute('height', Math.abs(finaldata))
+
+  }
+
+
+
+}
+
+
+    function handleMouseUp() {
+      if(rectangle2===true){
+            maindata.push(rectangle)
+            rectangle2 = false;
+        }
+
+        resizeh = false;
+        resizev = false;
+    }
+
+    svg.addEventListener('mousedown', handleMouseDown);
+    svg.addEventListener('mousemove', handleMouseMove);
+    svg.addEventListener('mouseup', handleMouseUp);
+  </script>
+</body>
+</html>
